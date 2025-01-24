@@ -12,7 +12,7 @@ const speak = (text) => {
     speakText.rate = 1;
     speakText.volume = 1;
     speakText.pitch = 1;
-    speakText.lang = 'de-DE';
+    speakText.lang = 'en-US';
 
     window.speechSynthesis.speak(speakText);
 }
@@ -29,16 +29,34 @@ const autoGreetUser = () => {
     speak(greeting);
 }
 
+function handleUserCommand(message) {
+    const commands = {
+        greeting: ['hi', 'hello', 'hey'],
+    }
+
+    // check greetings
+    if (commands.greeting.some(greeting => message.includes(greeting))) {
+        speak('Hello, how can I help you?');
+    }
+}
+
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
 const recognition = new SpeechRecognition();
 
 recognition.onresult = (event) => {
-    const current = event.resultIndex;
-    const transcript = event.results[current][0].transcript;
-    content.textContent = transcript;
+
+    console.log(event);
+    const text = event.results[0][0].transcript;
+    content.innerHTML = text;
+    // speak(text);
+
+    handleUserCommand(text.toLowerCase());
 }
+
 
 
 talkButton.addEventListener('click', () => {
     autoGreetUser();
+    recognition.start();
 })
