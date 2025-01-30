@@ -12,7 +12,7 @@ const speak = (text) => {
     speakText.rate = 1;
     speakText.volume = 1;
     speakText.pitch = 1;
-    speakText.lang = 'en-US';
+    speakText.lang = 'de-DE';
 
     window.speechSynthesis.speak(speakText);
 }
@@ -29,14 +29,36 @@ const autoGreetUser = () => {
     speak(greeting);
 }
 
+// Utility function to hand user search
+function handleSearchQuery(query, searchEngine, baseUrl) {
+    const finalText = `This is what I found on ${searchEngine} for ${query}`; 
+    window.open(`${baseUrl}${query.replace(" ", "+")}`, '_blank');
+    speak(finalText);
+}
+
 function handleUserCommand(message) {
     const commands = {
         greeting: ['hi', 'hello', 'hey'],
+        openLinks: {
+            google: 'open google'
+        },
+        searchCommands: ['what is', 'who is', 'who are', 'what is', 'what are']
     }
 
     // check greetings
     if (commands.greeting.some(greeting => message.includes(greeting))) {
         speak('Hello, how can I help you?');
+    }  
+    else if (Object.values(commands.openLinks).some(cmd => message.includes(cmd))) {
+        if (message.includes(commands.openLinks.google)) {
+            window.open('https://www.google.com');
+        }
+    }  
+    else if (commands.searchCommands.some(cmd => message.includes(cmd))) {
+        handleSearchQuery(message, 'Google', 'https://www.google.com/search?q=');
+    }
+    else {
+        speak('I am sorry, I did not understand that');
     }
 }
 
@@ -57,6 +79,6 @@ recognition.onresult = (event) => {
 
 
 talkButton.addEventListener('click', () => {
-    autoGreetUser();
+    // autoGreetUser();
     recognition.start();
 })
